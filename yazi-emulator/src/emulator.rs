@@ -88,7 +88,10 @@ impl Emulator {
 			}
 			Report::CellPixelSize { width, height } => {
 				self.csi_16t.set((*width, *height));
-				self.force_16t.set(Self::force_16t((*width, *height)));
+				// iTerm2 answers in points but draws images in screen pixels, which the
+				// window size in pixels matches.
+				let iterm2 = self.brand.get() == Brand::Iterm2;
+				self.force_16t.set(!iterm2 && Self::force_16t((*width, *height)));
 			}
 			Report::BackgroundColor(rgb) => self.background.set(Some(*rgb)),
 			Report::ColorScheme(light) => self.color_scheme.set(Some(*light)),
